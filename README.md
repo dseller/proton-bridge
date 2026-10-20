@@ -10,17 +10,19 @@ For contribution policy see [CONTRIBUTING](./CONTRIBUTING.md).
 ## Description Bridge
 Proton Mail Bridge for e-mail clients.
 
-When launched, Bridge will initialize local IMAP/SMTP servers and render 
-its GUI.
+When launched, Bridge runs headless: it initializes local IMAP/SMTP servers
+and serves a web interface, by default on https://0.0.0.0:8143.
 
-To configure an e-mail client, first log in using your Proton Mail credentials. 
-Open your e-mail client and add a new account using the settings which are 
-located in the Bridge GUI. The client will only be able to sync with 
-your Proton Mail account when the Bridge is running, thus the option 
-to start Bridge on startup is enabled by default.
+On the first start, Bridge prints a one-time setup token to the standard output
+and to the log. Open the web interface, enter the token and choose the password
+that protects the web interface.
 
-When the main window is closed, Bridge will continue to run in the
-background.
+To configure an e-mail client, first sign in to your Proton Mail account in the
+web interface. Open your e-mail client and add a new account using the settings
+which are shown in the web interface. The client will only be able to sync with
+your Proton Mail account when the Bridge is running.
+
+See [BUILDS](./BUILDS.md) for the command-line flags of the web interface.
 
 More details [on the public website](https://proton.me/mail/bridge).
 
@@ -77,16 +79,12 @@ There are now three types of system folders which Bridge recognises:
 |                        | Base Dir | Path                       |
 |------------------------|----------|----------------------------|
 | bridge lock file       | cache    | bridge.lock                |
-| bridge-gui lock file   | cache    | bridge-gui.lock            |
 | vault                  | config   | vault.enc                  |
-| gRPC server json       | config   | grpcServerConfig.json      |
-| gRPC client json       | config   | grpcClientConfig_<id>.json |
 | gRPC Focus server json | config   | grpcFocusServerConfig.json |
 | Logs                   | data     | logs                       |
 | gluon DB               | data     | gluon/backend/db           |
 | gluon messages         | data     | gluon/backend/store        |
 | Update files           | data     | updates                    |
 | sentry cache           | data     | sentry_cache               |
-| Mac/Linux File Socket  | temp     | bridge{4_DIGITS}           |
 
 

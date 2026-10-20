@@ -12,7 +12,6 @@ require (
 	github.com/ProtonMail/go-proton-api v0.4.1-0.20260901104215-8a62023d3e38
 	github.com/ProtonMail/gopenpgp/v2 v2.10.0-proton
 	github.com/PuerkitoBio/goquery v1.12.0
-	github.com/abiosoft/ishell v2.0.0+incompatible
 	github.com/allan-simon/go-singleinstance v0.0.0-20210120080615-d0997106ab37
 	github.com/bradenaw/juniper v0.15.3
 	github.com/cucumber/godog v0.12.5
@@ -25,7 +24,6 @@ require (
 	github.com/emersion/go-sasl v0.0.0-20220912192320-0145f2c60ead
 	github.com/emersion/go-smtp v0.15.1-0.20221021114529-49b17434419d
 	github.com/emersion/go-vcard v0.0.0-20230331202150-f3d26859ccd3
-	github.com/fatih/color v1.18.0
 	github.com/fxamacker/cbor/v2 v2.9.0
 	github.com/getsentry/sentry-go v0.15.0
 	github.com/go-ctap/ctaphid v0.8.3
@@ -49,6 +47,7 @@ require (
 	github.com/vmihailenco/msgpack/v5 v5.4.1
 	go.uber.org/goleak v1.3.0
 	go.uber.org/mock v0.6.0
+	golang.org/x/crypto v0.53.0
 	golang.org/x/net v0.56.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sys v0.46.0
@@ -67,7 +66,6 @@ require (
 	github.com/ProtonMail/go-crypto v1.4.1-proton // indirect
 	github.com/ProtonMail/go-mime v0.0.0-20230322103455-7d82a3887f2f // indirect
 	github.com/ProtonMail/go-srp v0.0.7 // indirect
-	github.com/abiosoft/readline v0.0.0-20180607040430-155bce2042db // indirect
 	github.com/andybalholm/cascadia v1.3.3 // indirect
 	github.com/bytedance/gopkg v0.1.3 // indirect
 	github.com/bytedance/sonic v1.15.0 // indirect
@@ -84,9 +82,9 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/elastic/go-windows v1.0.2 // indirect
 	github.com/emersion/go-textwrapper v0.0.0-20200911093747-65d896831594 // indirect
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/felixge/fgprof v0.9.5 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
-	github.com/flynn-archive/go-shlex v0.0.0-20150515145356-3f9db97f8568 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.12 // indirect
 	github.com/gin-contrib/sse v1.1.0 // indirect
 	github.com/gin-gonic/gin v1.12.0 // indirect
@@ -143,7 +141,6 @@ require (
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
 	go.opentelemetry.io/otel/trace v1.43.0 // indirect
 	golang.org/x/arch v0.22.0 // indirect
-	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/exp v0.0.0-20260312153236-7ab1446f8b90 // indirect
 	golang.org/x/mod v0.37.0 // indirect
 	golang.org/x/sync v0.21.0 // indirect

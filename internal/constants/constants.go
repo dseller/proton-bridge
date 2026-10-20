@@ -69,6 +69,9 @@ const (
 
 	// Host is the hostname of the bridge server.
 	Host = "127.0.0.1"
+
+	// ListenHost is the address the IMAP and SMTP servers listen on, so that email clients on other machines can reach them.
+	ListenHost = "0.0.0.0"
 )
 
 // nolint:goconst

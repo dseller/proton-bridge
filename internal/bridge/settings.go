@@ -310,6 +310,16 @@ func (bridge *Bridge) SetColorScheme(colorScheme string) error {
 	return bridge.vault.SetColorScheme(colorScheme)
 }
 
+// GetWebPasswordHash returns the bcrypt hash of the web interface password, or nil if none is set.
+func (bridge *Bridge) GetWebPasswordHash() []byte {
+	return bridge.vault.GetWebPasswordHash()
+}
+
+// SetWebPasswordHash sets the bcrypt hash of the web interface password.
+func (bridge *Bridge) SetWebPasswordHash(hash []byte) error {
+	return bridge.vault.SetWebPasswordHash(hash)
+}
+
 func (bridge *Bridge) GetKnowledgeBaseSuggestions(userInput string) (kb.ArticleList, error) {
 	return kb.GetSuggestions(userInput)
 }

@@ -139,7 +139,7 @@ func newAutostarter(exe string) *autostart.App {
 	return &autostart.App{
 		Name:        constants.FullAppName,
 		DisplayName: constants.FullAppName,
-		Exec:        []string{exe, "--" + flagNoWindow},
+		Exec:        []string{exe},
 	}
 }
 

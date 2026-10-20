@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Proton Mail Bridge</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Proton Mail Bridge</h1>
+    <div class="topbar-right">
+      <span id="connection" class="pill" hidden></span>
+      <span id="version" class="muted"></span>
+      <button id="signout" class="link" hidden>Sign out</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="view-setup" class="card narrow" hidden>
+      <h2>Set up the web interface</h2>
+      <p>Choose the password that protects this page. The setup token was printed to the standard output and the log when Bridge started.</p>
+      <form id="setup-form">
+        <label>Setup token <input name="token" autocomplete="off" required></label>
+        <label>Password <input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+        <label>Repeat password <input name="confirm" type="password" autocomplete="new-password" minlength="8" required></label>
+        <p class="error" data-error></p>
+        <button type="submit" class="primary">Set password</button>
+      </form>
+    </section>
+
+    <section id="view-signin" class="card narrow" hidden>
+      <h2>Sign in</h2>
+      <form id="signin-form">
+        <label>Password <input name="password" type="password" autocomplete="current-password" required></label>
+        <p class="error" data-error></p>
+        <button type="submit" class="primary">Sign in</button>
+      </form>
+    </section>
+
+    <div id="view-main" hidden>
+      <div id="notices"></div>
+
+      <div id="update" class="banner" hidden>
+        <span id="update-text"></span>
+        <button id="update-install" class="primary" hidden>Install update</button>
+        <button id="restart" class="primary" hidden>Restart Bridge</button>
+      </div>
+
+      <section class="card">
+        <div class="section-head">
+          <h2>Accounts</h2>
+          <button id="add-account" class="primary">Add account</button>
+        </div>
+        <p id="no-accounts" class="muted" hidden>No accounts yet. Add a Proton account to use it from your email client.</p>
+        <div id="accounts"></div>
+      </section>
+
+      <section class="card">
+        <h2>Settings</h2>
+        <form id="settings-form">
+          <fieldset>
+            <legend>Mail servers</legend>
+            <div class="grid">
+              <label>IMAP port <input name="imap_port" type="number" min="1" max="65535" required></label>
+              <label>IMAP security
+                <select name="imap_ssl"><option value="false">STARTTLS</option><option value="true">SSL</option></select>
+              </label>
+              <label>SMTP port <input name="smtp_port" type="number" min="1" max="65535" required></label>
+              <label>SMTP security
+                <select name="smtp_ssl"><option value="false">STARTTLS</option><option value="true">SSL</option></select>
+              </label>
+            </div>
+          </fieldset>
+          <fieldset>
+            <legend>Message cache</legend>
+            <label>Location <input name="cache_dir" required></label>
+            <p class="hint">Changing the location moves the existing cache, which can take a while.</p>
+          </fieldset>
+          <fieldset>
+            <legend>Behaviour</legend>
+            <label class="check"><input name="show_all_mail" type="checkbox"> Show the All Mail folder</label>
+            <label class="check"><input name="proxy_allowed" type="checkbox"> Use alternative routing when Proton is blocked</label>
+            <label class="check"><input name="telemetry_disabled" type="checkbox"> Disable usage diagnostics collection</label>
+          </fieldset>
+          <fieldset>
+            <legend>Updates</legend>
+            <label class="check"><input name="auto_update" type="checkbox"> Install updates automatically</label>
+            <label class="check"><input name="early_access" type="checkbox"> Early access to new versions</label>
+            <button type="button" id="check-updates">Check for updates</button>
+          </fieldset>
+          <p class="error" data-error></p>
+          <p class="success" data-success></p>
+          <button type="submit" class="primary">Save settings</button>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Web interface password</h2>
+        <form id="password-form">
+          <div class="grid">
+            <label>Current password <input name="current" type="password" autocomplete="current-password" required></label>
+            <label>New password <input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+            <label>Repeat new password <input name="confirm" type="password" autocomplete="new-password" minlength="8" required></label>
+          </div>
+          <p class="error" data-error></p>
+          <p class="success" data-success></p>
+          <button type="submit" class="primary">Change password</button>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="login-dialog">
+    <h2>Add account</h2>
+
+    <form id="login-credentials" data-step="credentials">
+      <label>Email or username <input name="username" autocomplete="off" required></label>
+      <label>Password <input name="password" type="password" autocomplete="off" required></label>
+    </form>
+
+    <form id="login-hv" data-step="hv" hidden>
+      <p>Proton needs to verify that you are human. Open the link below, complete the challenge, then continue.</p>
+      <p><a id="login-hv-url" target="_blank" rel="noopener noreferrer">Open the verification page</a></p>
+    </form>
+
+    <form id="login-totp" data-step="totp" hidden>
+      <label>Two-factor code <input name="code" inputmode="numeric" autocomplete="one-time-code" required></label>
+    </form>
+
+    <form id="login-mailbox" data-step="mailbox" hidden>
+      <label>Mailbox password <input name="password" type="password" autocomplete="off" required></label>
+    </form>
+
+    <p id="login-error" class="error"></p>
+
+    <div class="actions">
+      <button id="login-cancel" type="button">Cancel</button>
+      <button id="login-next" type="button" class="primary">Continue</button>
+    </div>
+  </dialog>
+</body>
+</html>

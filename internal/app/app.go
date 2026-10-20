@@ -67,24 +67,14 @@ const (
 	flagLogLevel      = "log-level"
 	flagLogLevelShort = "l"
 
-	flagGRPC      = "grpc"
-	flagGRPCShort = "g"
-
-	flagCLI      = "cli"
-	flagCLIShort = "c"
-
-	flagNonInteractive      = "noninteractive"
-	flagNonInteractiveShort = "n"
+	flagWebAddress = "web-address"
+	flagWebNoTLS   = "web-no-tls"
 
 	flagLogIMAP = "log-imap"
 	flagLogSMTP = "log-smtp"
 
 	flagEnableKeychainTest  = "enable-keychain-test"
 	flagDisableKeychainTest = "disable-keychain-test"
-
-	flagSoftwareRenderer    = "software-renderer"
-	flagSetSoftwareRenderer = "set-software-renderer"
-	flagSetHardwareRenderer = "set-hardware-renderer"
 
 	flagVersion      = "version"
 	flagVersionShort = "v"
@@ -94,9 +84,10 @@ const (
 const (
 	flagLauncher  = "launcher"
 	flagNoWindow  = "no-window"
-	flagParentPID = "parent-pid"
 	FlagSessionID = "session-id"
 )
+
+const defaultWebAddress = "0.0.0.0:8143"
 
 const (
 	appUsage     = "Proton Mail IMAP and SMTP Bridge"
@@ -146,20 +137,14 @@ func New() *cli.App {
 			Aliases: []string{flagLogLevelShort},
 			Usage:   "Set the log level (one of panic, fatal, error, warn, info, debug)",
 		},
-		&cli.BoolFlag{
-			Name:    flagGRPC,
-			Aliases: []string{flagGRPCShort},
-			Usage:   "Start the gRPC service",
+		&cli.StringFlag{
+			Name:  flagWebAddress,
+			Usage: "Set the address on which the web interface listens",
+			Value: defaultWebAddress,
 		},
 		&cli.BoolFlag{
-			Name:    flagCLI,
-			Aliases: []string{flagCLIShort},
-			Usage:   "Start the command line interface",
-		},
-		&cli.BoolFlag{
-			Name:    flagNonInteractive,
-			Aliases: []string{flagNonInteractiveShort},
-			Usage:   "Start the app in non-interactive mode",
+			Name:  flagWebNoTLS,
+			Usage: "Serve the web interface over plain HTTP instead of HTTPS (for use behind a TLS reverse proxy)",
 		},
 		&cli.StringFlag{
 			Name:  flagLogIMAP,
@@ -170,24 +155,6 @@ func New() *cli.App {
 			Usage: "Enable logging of SMTP communications (may contain decrypted data!)",
 		},
 		&cli.BoolFlag{
-			Name:               flagSoftwareRenderer, // This flag is ignored by bridge, but should be passed to launcher in case of restart, so it need to be accepted by the CLI parser.
-			Usage:              "Use software rendering of the GUI for the current execution of the application",
-			Value:              false,
-			DisableDefaultText: true,
-		},
-		&cli.BoolFlag{
-			Name:               flagSetSoftwareRenderer, // This flag is ignored by bridge, we just want it to be shown in the help (BRIDGE-217).
-			Usage:              "Toggle software rendering of the GUI for the current and future executions of the application",
-			Value:              false,
-			DisableDefaultText: true,
-		},
-		&cli.BoolFlag{
-			Name:               flagSetHardwareRenderer, // This flag is ignored by bridge, we just want it to be shown in the help (BRIDGE-217).
-			Usage:              "Toggle hardware rendering of the GUI for the current and future executions of the application",
-			Value:              false,
-			DisableDefaultText: true,
-		},
-		&cli.BoolFlag{
 			Name:               flagVersion,
 			Aliases:            []string{flagVersionShort},
 			Usage:              "Show the current version of the Proton Mail Bridge",
@@ -196,7 +163,7 @@ func New() *cli.App {
 
 		// Hidden flags
 		&cli.BoolFlag{
-			Name:   flagNoWindow,
+			Name:   flagNoWindow, // This flag is ignored by bridge, but autostart entries written by earlier versions still pass it.
 			Usage:  "Don't show window after start",
 			Hidden: true,
 		},
@@ -204,12 +171,6 @@ func New() *cli.App {
 			Name:   flagLauncher,
 			Usage:  "The launcher used to start the app",
 			Hidden: true,
-		},
-		&cli.IntFlag{
-			Name:   flagParentPID,
-			Usage:  "Process ID of the parent",
-			Hidden: true,
-			Value:  -1,
 		},
 		&cli.StringFlag{
 			Name:   FlagSessionID,
@@ -355,7 +316,7 @@ func run(c *cli.Context) error {
 												b.RemoveOldUpdates()
 
 												// Run the frontend.
-												return runFrontend(c, crashHandler, restarter, locations, b, eventCh, quitCh, c.Int(flagParentPID))
+												return runFrontend(c, crashHandler, restarter, b, eventCh, quitCh)
 											})
 										})
 									})

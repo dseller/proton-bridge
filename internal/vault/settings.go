@@ -231,6 +231,18 @@ func (vault *Vault) SetFirstStart(firstStart bool) error {
 	})
 }
 
+// GetWebPasswordHash returns the bcrypt hash of the web interface password, or nil if none is set.
+func (vault *Vault) GetWebPasswordHash() []byte {
+	return vault.getSafe().Settings.WebPasswordHash
+}
+
+// SetWebPasswordHash sets the bcrypt hash of the web interface password.
+func (vault *Vault) SetWebPasswordHash(hash []byte) error {
+	return vault.modSafe(func(data *Data) {
+		data.Settings.WebPasswordHash = hash
+	})
+}
+
 // GetMaxSyncMemory returns the maximum amount of memory the sync process should use.
 func (vault *Vault) GetMaxSyncMemory() uint64 {
 	v := vault.getSafe().Settings.MaxSyncMemory

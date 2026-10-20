@@ -9,7 +9,7 @@ TARGET_OS?=${GOOS}
 ROOT_DIR:=$(realpath .)
 
 ## Build
-.PHONY: build build-gui build-nogui build-launcher hasher install-libfido2
+.PHONY: build build-bridge build-launcher hasher install-libfido2
 
 # Keep version hardcoded so app build works also without Git repository.
 BRIDGE_APP_VERSION?=3.27.1+git
@@ -17,9 +17,6 @@ APP_VERSION:=${BRIDGE_APP_VERSION}
 APP_FULL_NAME:=Proton Mail Bridge
 APP_VENDOR:=Proton AG
 SRC_ICO:=bridge.ico
-SRC_ICNS:=Bridge.icns
-SRC_ICNS_TAHOE:=Assets.car # For macOS26+ the new icon format is used with the `Assets.car` binary. The binary can be re-generated using the `generate_mac_tahoe_icon.sh` script.
-SRC_SVG:=bridge.svg
 EXE_NAME:=proton-bridge
 REVISION:=$(shell "${ROOT_DIR}/utils/get_revision.sh" rev)
 TAG:=$(shell "${ROOT_DIR}/utils/get_revision.sh" tag)
@@ -72,43 +69,20 @@ DIRNAME:=$(shell basename ${CURDIR})
 
 LAUNCHER_EXE:=proton-bridge
 BRIDGE_EXE=bridge
-BRIDGE_GUI_EXE_NAME=bridge-gui
-BRIDGE_GUI_EXE=${BRIDGE_GUI_EXE_NAME}
 LAUNCHER_PATH:=cmd/launcher
 
 ifeq "${TARGET_OS}" "windows"
 	BRIDGE_EXE:=${BRIDGE_EXE}.exe
-	BRIDGE_GUI_EXE:=${BRIDGE_GUI_EXE}.exe
 	LAUNCHER_EXE:=${LAUNCHER_EXE}.exe
 	RESOURCE_FILE:=resource.syso
 endif
-ifeq "${TARGET_OS}" "darwin"
-	BRIDGE_EXE_NAME:=${BRIDGE_EXE}
-	BRIDGE_EXE:=${BRIDGE_EXE}.app
-	BRIDGE_GUI_EXE:=${BRIDGE_GUI_EXE}.app
-	EXE_BINARY_DARWIN:=Contents/MacOS/${BRIDGE_GUI_EXE_NAME}
-	EXE_TARGET_DARWIN:=${DEPLOY_DIR}/${TARGET_OS}/${LAUNCHER_EXE}.app
-	DARWINAPP_CONTENTS:=${EXE_TARGET_DARWIN}/Contents
-endif
-EXE_TARGET:=${DEPLOY_DIR}/${TARGET_OS}/${BRIDGE_EXE}
-EXE_GUI_TARGET:=${DEPLOY_DIR}/${TARGET_OS}/${BRIDGE_GUI_EXE}
+DEPLOY_TARGET:=${DEPLOY_DIR}/${TARGET_OS}
 
 TGZ_TARGET:=bridge_${TARGET_OS}_${REVISION}.tgz
 
-ifdef QT_API
-	VENDOR_TARGET:=prepare-vendor update-qt-docs
-else
-	VENDOR_TARGET=update-vendor
-endif
+build: ${TGZ_TARGET}
 
-build: build-gui
-
-build-gui: ${TGZ_TARGET}
-
-build-nogui: ${EXE_NAME} build-launcher
-ifeq "${TARGET_OS}" "darwin"
-	mv ${BRIDGE_EXE} ${BRIDGE_EXE_NAME}
-endif
+build-bridge: ${EXE_NAME} build-launcher
 
 go-build=go build $(1) -o $(2) $(3)
 go-build-finalize=${go-build}
@@ -156,52 +130,25 @@ bridge-rollout:
 hasher:
 	go build -o hasher utils/hasher/main.go
 
-${TGZ_TARGET}: ${DEPLOY_DIR}/${TARGET_OS}
+${TGZ_TARGET}: ${DEPLOY_TARGET}
 	rm -f $@
-	tar -czvf $@ -C ${DEPLOY_DIR}/${TARGET_OS} .
+	tar -czvf $@ -C ${DEPLOY_TARGET} .
 
-${DEPLOY_DIR}/linux: ${EXE_TARGET} build-launcher
-	cp -pf ./dist/${SRC_SVG} ${DEPLOY_DIR}/linux/logo.svg
-	cp -pf ./LICENSE ${DEPLOY_DIR}/linux/
-	cp -pf ./Changelog.md ${DEPLOY_DIR}/linux/
-	cp -pf ./dist/${EXE_NAME}.desktop ${DEPLOY_DIR}/linux/
-	mv ${LAUNCHER_EXE} ${DEPLOY_DIR}/linux/
-
-${DEPLOY_DIR}/darwin: install-libfido2 ${EXE_TARGET} build-launcher
-	mv ${EXE_GUI_TARGET} ${EXE_TARGET_DARWIN}
-	mv ${EXE_TARGET} ${DARWINAPP_CONTENTS}/MacOS/${BRIDGE_EXE_NAME}
-	perl -i -pe"s/>${BRIDGE_GUI_EXE_NAME}/>${LAUNCHER_EXE}/g" ${DARWINAPP_CONTENTS}/Info.plist
-	cp ./dist/${SRC_ICNS} ${DARWINAPP_CONTENTS}/Resources/${SRC_ICNS}
-	cp ./dist/${SRC_ICNS_TAHOE} ${DARWINAPP_CONTENTS}/Resources/${SRC_ICNS_TAHOE}
-	cp LICENSE ${DARWINAPP_CONTENTS}/Resources/
-	rm -rf "${DARWINAPP_CONTENTS}/Frameworks/QtWebEngine.framework"
-	rm -rf "${DARWINAPP_CONTENTS}/Frameworks/QtWebView.framework"
-	rm -rf "${DARWINAPP_CONTENTS}/Frameworks/QtWebEngineCore.framework"
-	mv ${LAUNCHER_EXE}  ${DARWINAPP_CONTENTS}/MacOS/${LAUNCHER_EXE}
-	./utils/remove_non_relative_links_darwin.sh "${EXE_TARGET_DARWIN}/${EXE_BINARY_DARWIN}"
-
-${DEPLOY_DIR}/windows: ${EXE_TARGET} build-launcher
-	cp ./dist/${SRC_ICO} ${DEPLOY_DIR}/windows/logo.ico
-	cp LICENSE ${DEPLOY_DIR}/windows/LICENSE.txt
-	mv ${LAUNCHER_EXE} ${DEPLOY_DIR}/windows/$(notdir ${LAUNCHER_EXE})
-	# plugins are installed in a plugins folder while needs to be near the exe
-	cp -rf ${DEPLOY_DIR}/windows/plugins/* ${DEPLOY_DIR}/windows/.
-	rm -rf ${DEPLOY_DIR}/windows/plugins
-
-${EXE_TARGET}: check-build-essentials ${EXE_NAME}
-	cd internal/frontend/bridge-gui/bridge-gui && \
-		BRIDGE_APP_FULL_NAME="${APP_FULL_NAME}" \
-		BRIDGE_VENDOR="${APP_VENDOR}" \
-		BRIDGE_APP_VERSION=${APP_VERSION} \
-		BRIDGE_REVISION=${REVISION} \
-		BRIDGE_TAG=${TAG} \
-		BRIDGE_DSN_SENTRY=${DSN_SENTRY} \
- 		BRIDGE_BUILD_TIME=${BUILD_TIME} \
-		BRIDGE_GUI_BUILD_CONFIG=Release \
-		BRIDGE_BUILD_ENV=${BUILD_ENV} \
-		BRIDGE_INSTALL_PATH="${ROOT_DIR}/${DEPLOY_DIR}/${GOOS}" \
-		./build.sh install
-	mv "${ROOT_DIR}/${BRIDGE_EXE}" "$(ROOT_DIR)/${EXE_TARGET}"
+.PHONY: ${DEPLOY_TARGET}
+ifeq "${TARGET_OS}" "darwin"
+${DEPLOY_TARGET}: check-build-essentials install-libfido2 build-bridge
+else
+${DEPLOY_TARGET}: check-build-essentials build-bridge
+endif
+	rm -rf ${DEPLOY_TARGET}
+	mkdir -p ${DEPLOY_TARGET}
+	mv ${BRIDGE_EXE} ${LAUNCHER_EXE} ${DEPLOY_TARGET}/
+	cp -pf ./Changelog.md ${DEPLOY_TARGET}/
+ifeq "${TARGET_OS}" "windows"
+	cp -pf ./LICENSE ${DEPLOY_TARGET}/LICENSE.txt
+else
+	cp -pf ./LICENSE ${DEPLOY_TARGET}/
+endif
 
 WINDRES_YEAR:=$(shell date +%Y)
 APP_VERSION_COMMA:=$(shell echo "${APP_VERSION}" | sed -e 's/[^0-9,.]*//g' -e 's/\./,/g')
@@ -261,10 +208,6 @@ check-build-essentials:
 	@$(call check_is_installed,unzip)
 	@$(call check_is_installed,tar)
 	@$(call check_is_installed,curl)
-ifneq "${GOOS}" "windows"
-	@$(call check_is_installed,cmake)
-	@$(call check_is_installed,ninja)
-endif
 
 add-license:
 	./utils/missing_license.sh add
@@ -364,7 +307,7 @@ StateProvider,Regulator,UpdateApplier,MessageBuilder,APIClient,Reporter,Download
 	mv tmp internal/services/syncservice/mocks_test.go
 	mockgen --package mocks github.com/ProtonMail/gluon/connector IMAPStateWrite > internal/services/imapservice/mocks/mocks.go
 
-lint: gofiles lint-golang lint-license lint-dependencies lint-changelog lint-bug-report
+lint: gofiles lint-golang lint-license lint-dependencies lint-changelog
 
 lint-license:
 	./utils/missing_license.sh check
@@ -379,12 +322,6 @@ lint-golang:
 	which golangci-lint || $(MAKE) install-linter
 	$(info linting with GOMAXPROCS=${GOMAXPROCS})
 	golangci-lint run ./...
-
-lint-bug-report:
-	python3 utils/validate_bug_report_file.py --file "internal/frontend/bridge-gui/bridge-gui/qml/Resources/bug_report_flow.json"
-
-lint-bug-report-preview:
-	python3 utils/validate_bug_report_file.py --file "internal/frontend/bridge-gui/bridge-gui/qml/Resources/bug_report_flow.json" --preview
 
 .PHONY: gofix
 gofix: check-has-go gofiles
@@ -410,58 +347,25 @@ gofiles: ./internal/bridge/credits.go
 	cd ./utils/ && ./credits.sh bridge
 
 ## Run and debug
-.PHONY: run run-qt run-qt-cli run-nogui run-cli run-noninteractive run-debug run-gui-tester clean-vendor clean-frontend-qt clean-frontend-qt-common clean
+.PHONY: run run-debug clean-vendor clean
 
 LOG?=debug
 LOG_IMAP?=client # client/server/all, or empty to turn it off
 LOG_SMTP?=--log-smtp # empty to turn it off
 RUN_FLAGS?=-l=${LOG} --log-imap=${LOG_IMAP} ${LOG_SMTP}
 
-run: run-qt
-
-run-cli: run-nogui
-
-run-noninteractive: build-nogui clean-vendor gofiles
-	PROTONMAIL_ENV=dev ./${LAUNCHER_EXE} ${RUN_FLAGS} -n
-
-run-qt: build-gui
-ifeq "${TARGET_OS}" "darwin"
-	PROTONMAIL_ENV=dev ${DARWINAPP_CONTENTS}/MacOS/${LAUNCHER_EXE}  ${RUN_FLAGS}
-else
-	PROTONMAIL_ENV=dev ./${DEPLOY_DIR}/${TARGET_OS}/${LAUNCHER_EXE} ${RUN_FLAGS}
-endif
-
-run-nogui: build-nogui clean-vendor gofiles
-	PROTONMAIL_ENV=dev ./${LAUNCHER_EXE} ${RUN_FLAGS} -c
+run: build-bridge clean-vendor gofiles
+	PROTONMAIL_ENV=dev ./${LAUNCHER_EXE} ${RUN_FLAGS}
 
 run-debug:
 	dlv debug \
 		--build-flags "-ldflags '-X github.com/ProtonMail/proton-bridge/v3/internal/constants.Version=3.1.0+git'" \
 		./cmd/Desktop-Bridge/main.go \
 		-- \
-		-n -l=trace
-
-ifeq "${TARGET_OS}" "windows"
-	EXE_SUFFIX=.exe
-endif
-
-bridge-gui-tester:  build-gui
-	cp ./cmd/Desktop-Bridge/deploy/${TARGET_OS}/bridge-gui${EXE_SUFFIX} .
-	cd ./internal/frontend/bridge-gui/bridge-gui-tester && cmake . && make
-
-run-gui-tester: bridge-gui-tester
-	# copying tester as bridge so bridge-gui will start it and connect to it automatically
-	cp ./internal/frontend/bridge-gui/bridge-gui-tester/bridge-gui-tester${EXE_SUFFIX} bridge${EXE_SUFFIX}
-	./bridge-gui${EXE_SUFFIX}
-
+		-l=trace
 
 clean-vendor:
 	rm -rf ./vendor
-
-clean-gui:
-	cd internal/frontend/bridge-gui/ && \
-		rm -f BuildConfig.h && \
-		rm -rf cmake-build-*/
 
 clean-vcpkg:
 	git submodule deinit -f ./extern/vcpkg
@@ -473,7 +377,7 @@ clean-vcpkg:
 	rm -rf ./extern/vcpkg-windows
 	git checkout -- extern/vcpkg-windows
 
-clean: clean-vendor clean-gui clean-vcpkg
+clean: clean-vendor clean-vcpkg
 	rm -rf vendor-cache
 	rm -rf cmd/Desktop-Bridge/deploy
 	rm -rf cmd/Import-Export/deploy
@@ -481,7 +385,7 @@ clean: clean-vendor clean-gui clean-vcpkg
 	rm -f ./*.syso
 	rm -f release-notes/bridge.html
 	rm -f release-notes/import-export.html
-	rm -f ${LAUNCHER_EXE} ${BRIDGE_EXE} ${BRIDGE_EXE_NAME}
+	rm -f ${LAUNCHER_EXE} ${BRIDGE_EXE}
 
 
 install-libfido2:

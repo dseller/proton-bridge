@@ -8,21 +8,15 @@
   - For Windows, it is recommended to use MinGW 64bit shell from [MSYS2](https://www.msys2.org/)
 * GCC (Linux), msvc (Windows) or Xcode (macOS)
 * Windres (Windows)
-* libglvnd and libsecret development files (Linux)
+* libsecret and libfido2 development files (Linux)
 * pkg-config (Linux)
-* cmake, ninja-build and Qt 6.8.2 are required to build the graphical user interface. On Linux, 
-the Mesa OpenGL development files are also needed.
 
 To enable the sending of crash reports using Sentry please set the
 `DSN_SENTRY` environment variable with the client key of your sentry project before build.
 Otherwise, the sending of crash reports will be disabled.
 
 ## Build
-In order to build Bridge app with Qt interface we are using
-[Qt 6.8.2](https://doc.qt.io/qt-6/gettingstarted.html).
-
-Please note that qmake path must be in your `PATH` to ensure Qt to be found.
-Also, before you start build **on Windows**, please unset the `MSYSTEM` variable
+Before you start the build **on Windows**, please unset the `MSYSTEM` variable
 
 ```bash
 export MSYSTEM=
@@ -35,21 +29,21 @@ export MSYSTEM=
 make build
 ```
 
-* The result will be stored in `./cmd/Destop-Bridge/deploy/${GOOS}/`
-    * for `linux`, the binary will have the name of the project directory (e.g `proton-bridge`)
-    * for `windows`, the binary will have the file extension `.exe` (e.g `proton-bridge.exe`)
-    * for `darwin`, the application will be created with name of the project directory (e.g `proton-bridge.app`)
+* The result will be stored in `./cmd/Desktop-Bridge/deploy/${GOOS}/` and packed into `bridge_${GOOS}_${REVISION}.tgz`.
+  It contains the `bridge` executable and the `proton-bridge` launcher (with the `.exe` extension on Windows).
+* To build only the executables in the project root, run `make build-bridge`.
 
-#### Build Bridge without GUI
-* If you need to build bridge without Qt dependencies, you can do so by running
+## Running Bridge
+Bridge runs headless. It is configured through a web interface that it serves while it runs.
 
-```bash
-make build-nogui
-```
-
-* To launch Bridge without GUI, you can invoke the `bridge` executable with one the following command-line switches:
-  * `--noninteractive` or `-n` to start Bridge without any interface (i.e., there is no way to add or remove client, get bridge password, etc.)
-  * `--cli` or `-c` to start Bridge with an interactive terminal interface.
+* By default the web interface listens on `0.0.0.0:8143` over HTTPS, using the self-signed Bridge TLS certificate.
+  * `--web-address <host:port>` changes the listening address, for example `--web-address 127.0.0.1:8143`.
+  * `--web-no-tls` serves plain HTTP, for use behind a reverse proxy that terminates TLS.
+* On the first start, Bridge prints a one-time setup token to the standard output and to the log.
+  Open the web interface, enter the setup token and choose the password that protects the web interface.
+* The web interface adds, signs out and removes accounts, shows the IMAP and SMTP settings for email clients,
+  and changes the Bridge settings. Accounts that require a security key (FIDO2) without an authenticator app
+  cannot be signed in from the web interface.
 * NOTE: You still need to set up a supported keychain on your system.
 
 ## Launchers
@@ -71,4 +65,4 @@ In order to be able to run following commands please install the development dep
 * `make test` will run all unit tests
 * `make lint` will lint the whole project
 * `make -C ./test test` will run the integration tests
-* `make run` will build Bridge without a GUI and start it in CLI mode
+* `make run` will build Bridge and start it

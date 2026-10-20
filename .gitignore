@@ -35,6 +35,7 @@ vendor-cache
 cmd/Desktop-Bridge/deploy
 cmd/Import-Export/deploy
 proton-bridge
+/bridge
 cmd/Desktop-Bridge/*.exe
 cmd/launcher/*.exe
 bin/

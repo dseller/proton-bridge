@@ -9,16 +9,6 @@ lint:
   tags:
     - shared-medium
 
-lint-bug-report-preview:
-  stage: test
-  extends:
-    - .image-linux-test
-    - .rules-branch-and-MR-manual
-  script:
-    - make lint-bug-report-preview
-  tags:
-    - shared-medium
-
 .script-test:
   stage: test
   extends:
@@ -144,37 +134,6 @@ test-coverage:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-
-test-e2e-ui:
-  stage: test
-  extends:
-    - .rules-branch-manual-scheduled-and-test-branch-always
-  tags:
-    - inbox-hyperv-windows-v1
-  image: windows-2022-inbox-gui-1.0.0
-  variables:
-    REQUIRES_GRAPHICAL_CONSOLE: true
-  before_script:
-    - echo "Downloading dotnet dependencies"
-    - cd ./tests/e2e/ui_tests/windows_os/
-    - dotnet restore ./ProtonMailBridge.UI.Tests.csproj
-    - dotnet list package
-  script:
-    - |
-      pwsh "$Env:CI_PROJECT_DIR/tests/e2e/ui_tests/windows_os/InstallerScripts/Get-BridgeInstaller.ps1"
-    - |
-      $Env:no_grpc_proxy="127.0.0.1"
-      $no_grpc_proxy="127.0.0.1"
-      dotnet test ./ProtonMailBridge.UI.Tests.csproj -- NUnit.Where="cat != TemporarilyExcluded"
-  after_script:
-    - |
-      cp "C:\Users\gitlab-runner\AppData\Roaming\protonmail\bridge-v3\logs\*" "$Env:CI_PROJECT_DIR\tests\e2e\ui_tests\windows_os\Results\artifacts\Logs\"
-    - |
-      pwsh "$Env:CI_PROJECT_DIR\tests\e2e\ui_tests\windows_os\InstallerScripts\Remove-Bridge.ps1"
-  artifacts:
-    paths:
-      - tests/e2e/ui_tests/windows_os/Results/artifacts/*
-    when: always
 
 go-vuln-check:
   extends:

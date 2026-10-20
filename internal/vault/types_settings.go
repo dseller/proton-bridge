@@ -56,6 +56,10 @@ type Settings struct {
 
 	PasswordArchive PasswordArchive
 
+	// WebPasswordHash is the bcrypt hash of the password that protects the web interface.
+	// It is empty until the password is set up on the first visit to the web interface.
+	WebPasswordHash []byte
+
 	// **WARNING**: These entry can't be removed until they vault has proper migration support.
 	SyncWorkers int
 	SyncAttPool int

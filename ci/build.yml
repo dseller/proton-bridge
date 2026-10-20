@@ -7,7 +7,6 @@
   script:
     - which go && go version
     - which gcc && gcc --version
-    - which qmake && qmake --version
     - git rev-parse --short=10 HEAD
     - make build
     - git diff && git diff-index --quiet HEAD

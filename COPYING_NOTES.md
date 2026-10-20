@@ -18,7 +18,6 @@ Proton Mail Bridge. If not, see https://www.gnu.org/licenses.
 Proton Mail Bridge includes the following 3rd party software:
 
 * [The Go Project libraries](https://golang.org/project/) | Available under [BSD license](https://golang.org/LICENSE)
-* [Qt](https://www.qt.io/)                                | Available under [multiple licences](https://www.qt.io/licensing)
 
 <!-- START AUTOGEN -->
 * [notificator](https://github.com/0xAX/notificator) available under [license](https://github.com/0xAX/notificator/blob/master/LICENSE) 
@@ -28,7 +27,6 @@ Proton Mail Bridge includes the following 3rd party software:
 * [go-proton-api](https://github.com/ProtonMail/go-proton-api) available under [license](https://github.com/ProtonMail/go-proton-api/blob/master/LICENSE) 
 * [gopenpgp](https://github.com/ProtonMail/gopenpgp/v2) available under [license](https://github.com/ProtonMail/gopenpgp/v2/blob/master/LICENSE) 
 * [goquery](https://github.com/PuerkitoBio/goquery) available under [license](https://github.com/PuerkitoBio/goquery/blob/master/LICENSE) 
-* [ishell](https://github.com/abiosoft/ishell) available under [license](https://github.com/abiosoft/ishell/blob/master/LICENSE) 
 * [go-singleinstance](https://github.com/allan-simon/go-singleinstance) available under [license](https://github.com/allan-simon/go-singleinstance/blob/master/LICENSE) 
 * [juniper](https://github.com/bradenaw/juniper) available under [license](https://github.com/bradenaw/juniper/blob/master/LICENSE) 
 * [godog](https://github.com/cucumber/godog) available under [license](https://github.com/cucumber/godog/blob/master/LICENSE) 
@@ -41,7 +39,6 @@ Proton Mail Bridge includes the following 3rd party software:
 * [go-sasl](https://github.com/emersion/go-sasl) available under [license](https://github.com/emersion/go-sasl/blob/master/LICENSE) 
 * [go-smtp](https://github.com/emersion/go-smtp) available under [license](https://github.com/emersion/go-smtp/blob/master/LICENSE) 
 * [go-vcard](https://github.com/emersion/go-vcard) available under [license](https://github.com/emersion/go-vcard/blob/master/LICENSE) 
-* [color](https://github.com/fatih/color) available under [license](https://github.com/fatih/color/blob/master/LICENSE) 
 * [cbor](https://github.com/fxamacker/cbor/v2) available under [license](https://github.com/fxamacker/cbor/v2/blob/master/LICENSE) 
 * [sentry-go](https://github.com/getsentry/sentry-go) available under [license](https://github.com/getsentry/sentry-go/blob/master/LICENSE) 
 * [ctaphid](https://github.com/go-ctap/ctaphid) available under [license](https://github.com/go-ctap/ctaphid/blob/master/LICENSE) 
@@ -65,6 +62,7 @@ Proton Mail Bridge includes the following 3rd party software:
 * [msgpack](https://github.com/vmihailenco/msgpack/v5) available under [license](https://github.com/vmihailenco/msgpack/v5/blob/master/LICENSE) 
 * [goleak](https://go.uber.org/goleak) available under [license](https://pkg.go.dev/go.uber.org/goleak?tab=licenses) 
 * [mock](https://go.uber.org/mock)
+* [crypto](https://golang.org/x/crypto) available under [license](https://cs.opensource.google/go/x/crypto/+/master:LICENSE) 
 * [net](https://golang.org/x/net) available under [license](https://cs.opensource.google/go/x/net/+/master:LICENSE) 
 * [oauth2](https://golang.org/x/oauth2) available under [license](https://cs.opensource.google/go/x/oauth2/+/master:LICENSE) 
 * [sys](https://golang.org/x/sys) available under [license](https://cs.opensource.google/go/x/sys/+/master:LICENSE) 
@@ -80,7 +78,6 @@ Proton Mail Bridge includes the following 3rd party software:
 * [go-crypto](https://github.com/ProtonMail/go-crypto) available under [license](https://github.com/ProtonMail/go-crypto/blob/master/LICENSE) 
 * [go-mime](https://github.com/ProtonMail/go-mime) available under [license](https://github.com/ProtonMail/go-mime/blob/master/LICENSE) 
 * [go-srp](https://github.com/ProtonMail/go-srp) available under [license](https://github.com/ProtonMail/go-srp/blob/master/LICENSE) 
-* [readline](https://github.com/abiosoft/readline) available under [license](https://github.com/abiosoft/readline/blob/master/LICENSE) 
 * [cascadia](https://github.com/andybalholm/cascadia) available under [license](https://github.com/andybalholm/cascadia/blob/master/LICENSE) 
 * [gopkg](https://github.com/bytedance/gopkg) available under [license](https://github.com/bytedance/gopkg/blob/master/LICENSE) 
 * [sonic](https://github.com/bytedance/sonic) available under [license](https://github.com/bytedance/sonic/blob/master/LICENSE) 
@@ -97,9 +94,9 @@ Proton Mail Bridge includes the following 3rd party software:
 * [go-spew](https://github.com/davecgh/go-spew) available under [license](https://github.com/davecgh/go-spew/blob/master/LICENSE) 
 * [go-windows](https://github.com/elastic/go-windows) available under [license](https://github.com/elastic/go-windows/blob/master/LICENSE) 
 * [go-textwrapper](https://github.com/emersion/go-textwrapper) available under [license](https://github.com/emersion/go-textwrapper/blob/master/LICENSE) 
+* [color](https://github.com/fatih/color) available under [license](https://github.com/fatih/color/blob/master/LICENSE) 
 * [fgprof](https://github.com/felixge/fgprof) available under [license](https://github.com/felixge/fgprof/blob/master/LICENSE) 
 * [httpsnoop](https://github.com/felixge/httpsnoop) available under [license](https://github.com/felixge/httpsnoop/blob/master/LICENSE) 
-* [go-shlex](https://github.com/flynn-archive/go-shlex) available under [license](https://github.com/flynn-archive/go-shlex/blob/master/LICENSE) 
 * [mimetype](https://github.com/gabriel-vasile/mimetype) available under [license](https://github.com/gabriel-vasile/mimetype/blob/master/LICENSE) 
 * [sse](https://github.com/gin-contrib/sse) available under [license](https://github.com/gin-contrib/sse/blob/master/LICENSE) 
 * [gin](https://github.com/gin-gonic/gin) available under [license](https://github.com/gin-gonic/gin/blob/master/LICENSE) 
@@ -156,7 +153,6 @@ Proton Mail Bridge includes the following 3rd party software:
 * [metric](https://go.opentelemetry.io/otel/metric)
 * [trace](https://go.opentelemetry.io/otel/trace)
 * [arch](https://golang.org/x/arch) available under [license](https://cs.opensource.google/go/x/arch/+/master:LICENSE) 
-* [crypto](https://golang.org/x/crypto) available under [license](https://cs.opensource.google/go/x/crypto/+/master:LICENSE) 
 * [exp](https://golang.org/x/exp) available under [license](https://cs.opensource.google/go/x/exp/+/master:LICENSE) 
 * [mod](https://golang.org/x/mod) available under [license](https://cs.opensource.google/go/x/mod/+/master:LICENSE) 
 * [sync](https://golang.org/x/sync) available under [license](https://cs.opensource.google/go/x/sync/+/master:LICENSE) 

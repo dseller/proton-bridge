@@ -49,13 +49,8 @@ import (
 const (
 	appName      = "Proton Mail Launcher"
 	exeName      = "bridge"
-	guiName      = "bridge-gui"
 	launcherName = "launcher"
 
-	FlagCLI                 = "cli"
-	FlagCLIShort            = "c"
-	FlagNonInteractive      = "noninteractive"
-	FlagNonInteractiveShort = "n"
 	FlagLauncher            = "launcher"
 	FlagWait                = "wait"
 	FlagSessionID           = "session-id"
@@ -132,15 +127,10 @@ func main() { //nolint:funlen
 
 	exe, err := getPathToUpdatedExecutable(filepath.Base(launcher), versioner, kr)
 	if err != nil {
-		exeToLaunch := guiName
-		if inCLIMode(args) {
-			exeToLaunch = exeName
-		}
-
-		l = l.WithField("exe_to_launch", exeToLaunch)
+		l = l.WithField("exe_to_launch", exeName)
 		l.WithError(err).Info("No more updates found, looking up bridge executable")
 
-		path, err := versioner.GetExecutableInDirectory(exeToLaunch, filepath.Dir(launcher))
+		path, err := versioner.GetExecutableInDirectory(exeName, filepath.Dir(launcher))
 		if err != nil {
 			l.WithError(err).Fatal("No executable in launcher directory")
 		}
@@ -185,16 +175,6 @@ func appendLauncherPath(path string, args []string) []string {
 		return res
 	}
 	return args
-}
-
-// inCLIMode detect if CLI mode is asked.
-func inCLIMode(args []string) bool {
-	return hasFlag(args, FlagCLI) || hasFlag(args, FlagCLIShort) || hasFlag(args, FlagNonInteractive) || hasFlag(args, FlagNonInteractiveShort)
-}
-
-// hasFlag checks if a flag is present in a list.
-func hasFlag(args []string, flag string) bool {
-	return flagIndex(args, flag) >= 0
 }
 
 // flagIndex returns the position of the first occurrence of a flag int args, or -1 if the flag is not present.
